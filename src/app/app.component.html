@@ -1,0 +1,76 @@
+<div class="main">
+    <div class="todo-list">
+        <span class="header-todo">
+            <div>
+                <span>отбор</span>
+                <select class="todo-sort" (change)="sortTask($event)">
+                    <option value="-1">все</option>
+                    <option value="0">обычные</option>
+                    <option value="1">важные</option>
+                    <option value="2">очень важный</option>
+                </select>
+            </div>
+            
+            <button (click)="taskModal=true" class="todo-add-btn">создать таск</button>
+        </span>
+        <div class="todos">
+            <ul>
+                <li *ngFor="let t of tasks; let i = index" [ngClass]="{'time-over': timeOver(t.FinishTo, t.IsComplete) }">
+                    <div class="todo">
+                        <div class="todo-check">
+                            <label class="task_complete">
+                                <input (change)="setStatus($event, t.TaskId, i)" 
+                                       [checked]="t.IsComplete" 
+                                       class="task_complete_input"
+                                       type="checkbox"/>
+                                <span class="fake-checkbox"></span>
+                            </label>
+                            <i class="fa fa-bell-o" 
+                            [ngClass]="{'todo-importnt-1level': t.Important === 0, 'todo-importnt-2level': t.Important === 1, 'todo-importnt-3level': t.Important === 2}"
+                            ></i>
+                        </div>
+                        <div class="todo-content">
+                            <span class="todo-name" [ngClass]="{'strike-text': t.IsComplete}">{{ t.Name }}</span>
+                            <span class="todo-desc" [ngClass]="{'strike-text': t.IsComplete}">{{ t.Description }}</span>
+                            <div class="todo-time">
+                                <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                <span class="todo-startTime" [ngClass]="{'strike-text': t.IsComplete}">{{ t.FinishTo | timeFormat }}</span>
+                                <div style="margin-left: 20px;" *ngIf="t.IsComplete">
+                                    <i class="fa fa-check-square-o"></i>
+                                    <span class="todo-releaseTime">{{ t.FinishDate | timeFormat}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="todo-managment">
+                            <i class="fa fa-edit" (click)="editTask(i, t.TaskId)"></i>
+                            <i class="fa fa-remove" (click)="deleteTask(i, t.TaskId)"></i>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="create-task" *ngIf="taskModal">
+        <form [formGroup]="todoForm" (submit)="submit()">
+            <div class="todo-fields">
+                <div style="width: 100%"><button class="fa fa-remove close-modal" (click)="taskModal=false"></button></div>
+                <input formControlName="Name" type="text" class="todo-modal-name" placeholder="Название задачи"/>
+                <textarea formControlName="Body" class="todo-modal-body" placeholder="Содержание задачи"></textarea>
+                <span style="margin-top: 20px;">важность задачи</span>
+                <select formControlName="Important" #important class="todo-important">
+                    <option selected value="0">обычно</option>
+                    <option value="1">важно</option>
+                    <option value="2">очень важно</option>
+                </select>
+                <span style="margin-top: 20px;">начало выполнения</span>
+                <input formControlName="TimeBegin" type="datetime-local" class="todo-start"/>
+
+                <button type="submit" class="todo-create">создать</button>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
